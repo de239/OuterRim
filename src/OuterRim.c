@@ -12,29 +12,8 @@ static Layer *window_layer;
 #define INNER_DOT_COLOUR GColorDarkGray
 
 /*
-static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-  text_layer_set_text(text_layer, "Select");
-}
-
-static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-  text_layer_set_text(text_layer, "Up");
-}
-
-static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-  text_layer_set_text(text_layer, "Down");
-}
-
 void tap(AccelAxisType axis, int32_t direction) {
-//static void tap(AccelAxisType axis, int direction) {
   text_layer_set_text(text_layer, "Tap");
-}
-
-static void click_config_provider(void *context) {
-  window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
-  window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
-  window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
-
-  accel_tap_service_subscribe(tap);
 }
 */
 
@@ -67,13 +46,15 @@ static void window_update_proc(Layer *l, GContext *ctx) {
 	inner_hand_end.y = (-cos_lookup(angle) * inner_hand_length / TRIG_MAX_RATIO) + centre.y;
 	inner_hand_end.x = (sin_lookup(angle) * inner_hand_length / TRIG_MAX_RATIO) + centre.x;
 
-	graphics_context_set_stroke_width(ctx, 3);
-
 	graphics_context_set_fill_color(ctx, FACE_BACKGROUND_COLOUR);
 	graphics_fill_rect(ctx, layer_get_bounds(l), 0, GCornerNone);
 
+	graphics_context_set_stroke_width(ctx, 1);
+
 	graphics_context_set_stroke_color(ctx, CIRCLE_COLOUR);
 	graphics_draw_circle(ctx, centre, circle_radius);
+
+	graphics_context_set_stroke_width(ctx, 3);
 
 	graphics_context_set_stroke_color(ctx, OUTER_HAND_COLOUR);
 	graphics_draw_line(ctx, outer_hand_start, outer_hand_end);
@@ -104,7 +85,7 @@ static void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
 
 static void init(void) {
   window = window_create();
-//  window_set_click_config_provider(window, click_config_provider);
+  //accel_tap_service_subscribe(tap);
   window_set_window_handlers(window, (WindowHandlers) {
     .load = window_load,
     .unload = window_unload,
@@ -124,8 +105,7 @@ static void deinit(void) {
 int main(void) {
   init();
 
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Done initializing, pushed window: %p", window);
-
   app_event_loop();
+
   deinit();
 }
