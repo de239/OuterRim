@@ -63,7 +63,7 @@ static void window_update_proc(Layer *l, GContext *ctx) {
 
 	angle = TRIG_MAX_ANGLE * (t.tm_hour % 12) / 12;
 	// add a little bit because we are likely partially through the minute
-	//angle += TRIG_MAX_ANGLE * (t.tm_sec / 60);
+	angle += TRIG_MAX_ANGLE * (t.tm_min / 60);
 	inner_hand_end.y = (-cos_lookup(angle) * inner_hand_length / TRIG_MAX_RATIO) + centre.y;
 	inner_hand_end.x = (sin_lookup(angle) * inner_hand_length / TRIG_MAX_RATIO) + centre.x;
 
