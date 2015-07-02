@@ -53,7 +53,7 @@ static void window_update_proc(Layer *l, GContext *ctx) {
 	GPoint outer_hand_end;
 	int32_t outer_hand_length = circle_radius / 2;
 	GPoint inner_hand_end;
-	int32_t inner_hand_length = circle_radius / 2;
+	int32_t inner_hand_length = circle_radius / 2 + inner_radius;
 
 	int32_t angle = TRIG_MAX_ANGLE * t.tm_min / 60;
 	outer_hand_start.y = (-cos_lookup(angle) * circle_radius / TRIG_MAX_RATIO) + centre.y;
