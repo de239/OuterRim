@@ -17,7 +17,7 @@ static int32_t inner_hand_length;
 #define CIRCLE_COLOUR GColorWhite
 #define SECOND_HAND_CIRCLE_COLOUR GColorRed
 #define OUTER_HAND_COLOUR GColorWhite
-#define SECOND_HAND_COLOUR GColorGreen
+#define SECOND_HAND_COLOUR GColorBlack
 #define INNER_CIRCLE_COLOUR GColorBrilliantRose
 #define INNER_HAND_COLOUR GColorBrilliantRose
 #define INNER_DOT_COLOUR GColorDarkGray
