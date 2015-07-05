@@ -32,17 +32,19 @@ static void face_update_proc(Layer *l, GContext *ctx) {
 	GPoint inner_hand_end;
 	GPoint second_hand_end;
 
-	int32_t angle = TRIG_MAX_ANGLE * t.tm_min / 60;
-	outer_hand_start.y = (-cos_lookup(angle) * circle_radius / TRIG_MAX_RATIO) + centre.y;
-	outer_hand_start.x = (sin_lookup(angle) * circle_radius / TRIG_MAX_RATIO) + centre.x;
-	outer_hand_end.y = (-cos_lookup(angle) * (circle_radius - outer_hand_length) / TRIG_MAX_RATIO) + centre.y;
-	outer_hand_end.x = (sin_lookup(angle) * (circle_radius - outer_hand_length) / TRIG_MAX_RATIO) + centre.x;
+	float min_angle = TRIG_MAX_ANGLE * t.tm_min / 60;
+	outer_hand_start.y = (-cos_lookup(min_angle) * circle_radius / TRIG_MAX_RATIO) + centre.y;
+	outer_hand_start.x = (sin_lookup(min_angle) * circle_radius / TRIG_MAX_RATIO) + centre.x;
+	outer_hand_end.y = (-cos_lookup(min_angle) * (circle_radius - outer_hand_length) / TRIG_MAX_RATIO) + centre.y;
+	outer_hand_end.x = (sin_lookup(min_angle) * (circle_radius - outer_hand_length) / TRIG_MAX_RATIO) + centre.x;
 
-	angle = TRIG_MAX_ANGLE * (t.tm_hour % 12) / 12;
-	// add a little bit because we are likely partially through the minute
-	angle += TRIG_MAX_ANGLE * (t.tm_min / 60);
-	inner_hand_end.y = (-cos_lookup(angle) * inner_hand_length / TRIG_MAX_RATIO) + centre.y;
-	inner_hand_end.x = (sin_lookup(angle) * inner_hand_length / TRIG_MAX_RATIO) + centre.x;
+	float hour_angle = TRIG_MAX_ANGLE * (t.tm_hour % 12) / 12;
+	// add a little bit because we are likely partially through the hour
+	// XXX should look at the generated code to see if the compiler is smart enough
+	// to DTRT
+	hour_angle += (min_angle / TRIG_MAX_ANGLE) * (TRIG_MAX_ANGLE / 12);
+	inner_hand_end.y = (-cos_lookup(hour_angle) * inner_hand_length / TRIG_MAX_RATIO) + centre.y;
+	inner_hand_end.x = (sin_lookup(hour_angle) * inner_hand_length / TRIG_MAX_RATIO) + centre.x;
 
 	graphics_context_set_fill_color(ctx, FACE_BACKGROUND_COLOUR);
 	graphics_fill_rect(ctx, layer_get_bounds(l), 0, GCornerNone);
@@ -57,7 +59,7 @@ static void face_update_proc(Layer *l, GContext *ctx) {
 		graphics_context_set_fill_color(ctx, SECOND_HAND_CIRCLE_COLOUR);
 		graphics_fill_circle(ctx, centre, second_hand_radius);
 
-		angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
+		float angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
 		second_hand_end.y = (-cos_lookup(angle) * second_hand_radius / TRIG_MAX_RATIO) + centre.y;
 		second_hand_end.x = (sin_lookup(angle) * second_hand_radius / TRIG_MAX_RATIO) + centre.x;
 
