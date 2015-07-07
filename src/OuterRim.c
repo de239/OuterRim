@@ -22,7 +22,7 @@ static int32_t inner_hand_length;
 #define INNER_HAND_COLOUR GColorBrilliantRose
 #define INNER_DOT_COLOUR GColorDarkGray
 
-#define SECOND_HAND_DURATION 2
+#define SECOND_HAND_DURATION 3000
 
 static void face_update_proc(Layer *l, GContext *ctx) {
 	time_t now = time(NULL);
@@ -110,16 +110,13 @@ static void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 static void handle_second_tick(struct tm *tick_time, TimeUnits units_changed) {
-	static uint8_t seconds_displayed = 0;
+	layer_mark_dirty(face_layer);
+}
 
-	if(seconds_displayed++ > SECOND_HAND_DURATION) {
-		display_second_hand = false;
-		seconds_displayed = 0;
-
-		tick_timer_service_unsubscribe();
-		tick_timer_service_subscribe(MINUTE_UNIT, handle_minute_tick);
-	}
-
+static void remove_second_hand(void *data) {
+	display_second_hand = false;
+	tick_timer_service_unsubscribe();
+	tick_timer_service_subscribe(MINUTE_UNIT, handle_minute_tick);
 	layer_mark_dirty(face_layer);
 }
 
@@ -129,6 +126,8 @@ static void tap(AccelAxisType axis, int32_t direction) {
 
 	tick_timer_service_unsubscribe();
 	tick_timer_service_subscribe(SECOND_UNIT, handle_second_tick);
+
+	app_timer_register(SECOND_HAND_DURATION, remove_second_hand, NULL);
 }
 
 static void init(void) {
