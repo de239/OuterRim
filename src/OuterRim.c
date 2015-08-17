@@ -15,12 +15,17 @@ static int32_t inner_hand_length;
 
 #define FACE_BACKGROUND_COLOUR GColorBlack
 #define CIRCLE_COLOUR GColorWhite
-#define SECOND_HAND_CIRCLE_COLOUR GColorRed
+#define SECOND_HAND_CIRCLE_COLOUR COLOR_FALLBACK(GColorRed, GColorWhite)
 #define OUTER_HAND_COLOUR GColorWhite
 #define SECOND_HAND_COLOUR GColorBlack
-#define INNER_CIRCLE_COLOUR GColorBrilliantRose
-#define INNER_HAND_COLOUR GColorBrilliantRose
+#define INNER_CIRCLE_COLOUR COLOR_FALLBACK(GColorBrilliantRose, GColorWhite)
+#define INNER_HAND_COLOUR COLOR_FALLBACK(GColorBrilliantRose, GColorWhite)
+/*
+ * Would be invisible in monochroms so we won't even draw it.
+ */
+#ifdef PBL_COLOR
 #define INNER_DOT_COLOUR GColorDarkGray
+#endif
 
 #define SECOND_HAND_DURATION 3000
 
@@ -49,11 +54,15 @@ static void face_update_proc(Layer *l, GContext *ctx) {
 	graphics_context_set_fill_color(ctx, FACE_BACKGROUND_COLOUR);
 	graphics_fill_rect(ctx, layer_get_bounds(l), 0, GCornerNone);
 
+#ifndef PBL_PLATFORM_APLITE
 	graphics_context_set_stroke_width(ctx, 1);
+#endif
 	graphics_context_set_stroke_color(ctx, CIRCLE_COLOUR);
 	graphics_draw_circle(ctx, centre, circle_radius);
 
+#ifndef PBL_PLATFORM_APLITE
 	graphics_context_set_stroke_width(ctx, 3);
+#endif
 
 	if(display_second_hand) {
 		graphics_context_set_fill_color(ctx, SECOND_HAND_CIRCLE_COLOUR);
@@ -76,8 +85,13 @@ static void face_update_proc(Layer *l, GContext *ctx) {
 	graphics_context_set_stroke_color(ctx, INNER_HAND_COLOUR);
 	graphics_draw_line(ctx, centre, inner_hand_end);
 
+	/*
+	 * Would be invisible in monochroms so we won't even draw it.
+	 */
+#ifdef PBL_COLOR
 	graphics_context_set_fill_color(ctx, INNER_DOT_COLOUR);
 	graphics_fill_circle(ctx, centre, inner_dot);
+#endif
 }
 
 static void window_load(Window *window) {
